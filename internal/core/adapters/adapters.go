@@ -4,8 +4,8 @@ import "github.com/Domains18/SIL-backend/internal/core/models"
 
 
 type Order interface {
-	CreateOrder(order *models.Order) error
-	GetCustomerOrders(customerID int) ([]models.Order, error)
+	CreateOrder(order models.Order) (int, error)
+	GetCustomerByID(customerID int) (models.Customer, error)
 }
 
 type Customer interface {
