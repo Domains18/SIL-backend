@@ -11,7 +11,7 @@ import (
 
 
 
-func CallBackHandler(auth auth.Auth, store *sessions.CookieStore) http.HandlerFunc {
+func CallBackHandler(auth authenticator.Authenticator, store *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request){
 		_, span := otel.Tracer("auth-callback-service").Start(r.Context(), "CallBackHandler")
 		defer span.End()

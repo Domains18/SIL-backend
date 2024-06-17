@@ -1,43 +1,50 @@
-package auth
+package authenticator
 
 import (
 	"context"
-	"fmt"
-
+	"errors"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
+	"os"
 )
 
-
-type Auth struct {
+type Authenticator struct {
 	*oidc.Provider
 	oauth2.Config
 }
 
-
-func (a *Auth) VerifyIDToken(ctx context.Context, token *oauth2.Token)(*oidc.IDToken, error) {
+func (a *Authenticator) VerifyIDToken(ctx context.Context, token *oauth2.Token) (*oidc.IDToken, error) {
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
-		return nil, fmt.Errorf("no id_token in token")
+		return nil, errors.New("no id_token field in oauth2 token")
 	}
-	oidconfiig := &oidc.Config{
+
+	oidcConfig := &oidc.Config{
 		ClientID: a.ClientID,
 	}
-	return a.Verifier(oidconfiig).Verify(ctx, rawIDToken)
+
+	return a.Verifier(oidcConfig).Verify(ctx, rawIDToken)
 }
 
-
-func NewAuth(clientID, clientSecret, issuer string) (*Auth, error) {
-	provider, err := oidc.NewProvider(context.Background(), issuer)
+func New() (*Authenticator, error) {
+	provider, err := oidc.NewProvider(
+		context.Background(),
+		"https://"+os.Getenv("AUTH0_DOMAIN")+"/",
+	)
 	if err != nil {
 		return nil, err
 	}
-	config := oauth2.Config{
-		ClientID: clientID,
-		ClientSecret: clientSecret,
-		Endpoint: provider.Endpoint(),
-		RedirectURL: "http://localhost:8080/auth/callback",
-		Scopes: []string{oidc.ScopeOpenID, "profile", "email"},
+
+	conf := oauth2.Config{
+		ClientID:     os.Getenv("AUTH0_CLIENT_ID"),
+		ClientSecret: os.Getenv("AUTH0_CLIENT_SECRET"),
+		RedirectURL:  os.Getenv("AUTH0_CALLBACK_URL"),
+		Endpoint:     provider.Endpoint(),
+		Scopes:       []string{oidc.ScopeOpenID, "profile"},
 	}
-	return &Auth{provider, config}, nil
+
+	return &Authenticator{
+		Provider: provider,
+		Config:   conf,
+	}, nil
 }

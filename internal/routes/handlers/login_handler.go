@@ -13,7 +13,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 )
 
-func LoginHandler(auth  auth.Auth,  store *sessions.CookieStore) http.HandlerFunc {
+func LoginHandler(auth  authenticator.Authenticator,  store *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, span := otel.Tracer("user-login-service").Start(r.Context(), "LoginHandler")
 		defer span.End()
