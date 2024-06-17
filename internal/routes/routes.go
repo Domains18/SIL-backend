@@ -16,7 +16,7 @@ import (
 func RegisterRoutes(mux *http.ServeMux, orderRepo adapters.Order, customerRepo adapters.Customer, auth *authenticator.Authenticator) {
 	handler := handlers.NewHandler(orderRepo, customerRepo)
 
-	store := sessions.NewCookieStore([]byte("mike"))
+	store := sessions.NewCookieStore([]byte("suswek"))
 	mux.Handle("/", otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "Welcome to the Savannah OrderManagement API!")
 	}), "Index"))

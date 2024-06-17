@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 
+	"github.com/Domains18/SIL-backend/internal/core/adapters"
 	"github.com/Domains18/SIL-backend/internal/core/models"
 )
 
@@ -56,6 +57,6 @@ func (c CustomerRepo) UpdateCustomer(customer models.Customer) error {
 	return nil
 }
 
-func NewCustomerRepo(db *sql.DB) *CustomerRepo {
+func NewCustomerRepo(db *sql.DB) adapters.Customer{
 	return &CustomerRepo{db: db}
 }

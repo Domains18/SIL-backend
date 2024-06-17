@@ -1,4 +1,4 @@
-package http
+package resolvers
 
 func GetConfigPath(configPath string) string {
 	if configPath == "docker" {

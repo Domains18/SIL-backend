@@ -1,23 +1,82 @@
 package main
 
 import (
+	"context"
+	"encoding/gob"
 	"log"
+	"net/http"
+	"os"
+	"runtime/trace"
+	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/Domains18/SIL-backend/conf"
+	"github.com/Domains18/SIL-backend/internal/core/repositories"
+	"github.com/Domains18/SIL-backend/internal/routes"
+	authenticator "github.com/Domains18/SIL-backend/pkg/auth"
+	pkg "github.com/Domains18/SIL-backend/pkg/db"
+	"github.com/Domains18/SIL-backend/pkg/resolvers"
+	"github.com/joho/godotenv"
+	"go.opentelemetry.io/otel"
 )
 
 
+const (
+	service = "backend"
+	enviroment = "dev"
+	id = 1
+)
+
+func init() {
+	gob.Register(map[string]interface{}{})
+}
 
 
-func  main(){
-	app := fiber.New()
+func main(){
+	tp, err := tracerProvider("http://localhost:4317/api/traces")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(){
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Fatalf("failed to shutdown trace provider: %v", err)
+		}
+	}()
+	otel.SetTracerProvider(tp)
+
+	configPath := resolvers.GetConfigPath(os.Getenv("config"))
+	cfgFile, err := conf.RequireConfigurations(configPath)
+	if err != nil {
+		log.Fatalf("unable to read configurations: %v", err)
+	}
+	// _,  err = conf.ParseConfigurations(cfgFile)
+	_, err = conf.ParseConfigurations(cfgFile)
+	if err != nil {
+		log.Fatalf("ParseConfig: %v", err)
+	}
+
+	err = godotenv.Load(".env_example")
+
+	if err != nil {
+		log.Fatal("Error loading .env_example file")
+	}
 
 
+	orderRepo := repositories.NewOrderRepo(pkg.DB)
+	customerRepo := repositories.NewCustomerRepo(pkg.DB)
 
+	auth, err := authenticator.New()
+	if err != nil {
+		log.Fatalf("Failed to initialize the authenticator: %v", err)
+	}
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	rtr := http.NewServeMux()
+	routes.RegisterRoutes(rtr, orderRepo, customerRepo, auth)
 
-	log.Fatalf("failed to start server: %v", app.Listen(":3000"))
+	log.Print("Server listening on http://localhost:3001/")
+	if err := http.ListenAndServe("0.0.0.0:3001", rtr); err != nil {
+		log.Fatalf("There was an error with the http server: %v", err)
+	}
+
 }

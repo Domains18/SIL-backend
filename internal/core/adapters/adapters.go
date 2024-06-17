@@ -10,9 +10,9 @@ type Order interface {
 
 type Customer interface {
 	GetCustomerByID(customerID int) (models.Customer, error)
-	CreateCustomer(customer models.Customer) error
+	AddCustomer(customer models.Customer) error
 }
 
-type SMS interface {
-	SendSMS(phoneNumber, message string) error
+type SMS  interface {
+	SendSMS(message string, phone string) error
 }
