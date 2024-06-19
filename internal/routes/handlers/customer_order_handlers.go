@@ -36,7 +36,7 @@ func (h *Handler) AddCustomerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add the customer to the database
-	err = h.customerRepo.CreateCustomer(customer)
+	err = h.customerRepo.AddCustomer(customer)
 	if err != nil {
 		writeErrorResponse(w, http.StatusInternalServerError, "internal_error", "Failed to add customer to the database", err.Error())
 		span.RecordError(err)

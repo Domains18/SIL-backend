@@ -32,7 +32,7 @@ type MockCustomerRepo struct {
 	mock.Mock
 }
 
-func (m *MockCustomerRepo) CreateCustomer(customer models.Customer) error {
+func (m *MockCustomerRepo) AddCustomer(customer models.Customer) error {
 	args := m.Called(customer)
 	return args.Error(0)
 }
