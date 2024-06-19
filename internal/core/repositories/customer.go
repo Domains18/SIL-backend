@@ -12,8 +12,7 @@ type CustomerRepo struct {
 	db *sql.DB
 }
 
-
-func (c CustomerRepo) CreateCustomer(customer models.Customer) error {
+func (c CustomerRepo) AddCustomer(customer models.Customer) error {
 	stmt, err := c.db.Prepare(createCustomerQuery)
 	if err != nil {
 		return err
