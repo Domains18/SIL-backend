@@ -1,0 +1,54 @@
+openapi: 3.0.0
+info:
+  titlle: backend fod ordering system
+  version: 1.0.0
+  description: API for the backend food ordering system
+  contact:
+    name: Gibson Kemboi
+    email: gibsonsgibson88@gmail.com
+    url: https://kemboi.nerds.africa
+servers:
+  /customers:
+   post:
+    summary: Create a new customer
+    description: Create a new customer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+                format: email
+              phone:
+                type: string
+                format: phone
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Invalid request body'
+    "500":
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Internal Server Error'
