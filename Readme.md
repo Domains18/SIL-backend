@@ -23,8 +23,8 @@ FoodDelivery  API is a REST API for managing orders and customers for your busin
 
 ## Prerequisites
 
-- Go (version X.X or higher)
-- PostgreSQL (version X.X or higher)
+- Go (version 1.16 or higher)
+- PostgreSQL (version 18 or higher)
 - Docker (optional)
 
 ## Installation
