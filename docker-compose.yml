@@ -1,0 +1,25 @@
+services:
+
+  db:
+    image: postgres:15.1-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - foodDelivery-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command:
+      - "-c"
+      - "shared_buffers=64MB"
+      - "-c"
+      - "effective_cache-size=64MB"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 300M
+
+volumes:
+  foodDelivery-db:
+    external: true

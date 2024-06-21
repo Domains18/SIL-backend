@@ -1,0 +1,9 @@
+POST http://localhost:5556/order
+content-type: application/json
+
+{
+  "customer_id": 1,
+  "item": "Chai Tea",
+  "amount": 690.00,
+  "time": "2024-06-01T12:00:00"
+}

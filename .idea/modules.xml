@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SIL-backend.iml" filepath="$PROJECT_DIR$/.idea/SIL-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/savannah-ordermanagement.iml" filepath="$PROJECT_DIR$/.idea/savannah-ordermanagement.iml" />
     </modules>
   </component>
 </project>

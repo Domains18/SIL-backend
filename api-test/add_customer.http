@@ -1,0 +1,8 @@
+POST http://localhost:5556/signup
+content-type: application/json
+
+{
+  "name": "John Doe",
+  "code": "JD1",
+  "phone": "+255676767676",
+}
