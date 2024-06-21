@@ -4,83 +4,158 @@ info:
   version: 1.0.0
   description: API for managing customers and orders for a food delivery service
 servers:
-  - url: http://localhost:3000
+  - url: https://api.fooddelivery.com/v1
+    description: Production server
+  - url: https://staging-api.fooddelivery.com/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Local development server
+tags:
+  - name: Customers
+    description: Customer management
+  - name: Orders
+    description: Order management
 paths:
   /customers:
     post:
       summary: Add a new customer
+      tags:
+        - Customers
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: The name of the customer
-                code:
-                  type: string
-                  description: The unique code of the customer
-                phone:
-                  type: string
-                  description: The phone number of the customer
-            example:
-              name: John Doe
-              code: ABC123
-              phone: +1234567890
+              $ref: '#/components/schemas/CustomerInput'
       responses:
         '201':
           description: Customer added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
         '400':
-          description: Bad request. Invalid request body.
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: Internal server error. Failed to add customer to the database.
+          $ref: '#/components/responses/InternalServerError'
 
   /orders:
     post:
       summary: Add a new order
+      tags:
+        - Orders
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                customer_id:
-                  type: integer
-                  description: The ID of the customer placing the order
-                item:
-                  type: string
-                  description: The item being ordered
-                amount:
-                  type: number
-                  format: float
-                  description: The amount of the order
-                time:
-                  type: string
-                  format: date-time
-                  description: The time the order was placed
-            example:
-              customer_id: 1
-              item: Pizza
-              amount: 200.00
-              time: "2024-02-21T12:00:00Z"
+              $ref: '#/components/schemas/OrderInput'
       responses:
         '201':
           description: Order added successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Confirmation message
-                  order_id:
-                    type: integer
-                    description: The ID of the newly created order
+                $ref: '#/components/schemas/OrderResponse'
         '400':
-          description: Bad request. Invalid request body.
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: Internal server error. Failed to add order to the database.
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    CustomerInput:
+      type: object
+      required:
+        - name
+        - code
+        - phone
+      properties:
+        name:
+          type: string
+          description: The name of the customer
+        code:
+          type: string
+          description: The unique code of the customer
+        phone:
+          type: string
+          description: The phone number of the customer
+      example:
+        name: John Doe
+        code: ABC123
+        phone: +1234567890
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier for the customer
+        name:
+          type: string
+          description: The name of the customer
+        code:
+          type: string
+          description: The unique code of the customer
+        phone:
+          type: string
+          description: The phone number of the customer
+
+    OrderInput:
+      type: object
+      required:
+        - customer_id
+        - item
+        - amount
+        - time
+      properties:
+        customer_id:
+          type: integer
+          description: The ID of the customer placing the order
+        item:
+          type: string
+          description: The item being ordered
+        amount:
+          type: number
+          format: float
+          description: The amount of the order
+        time:
+          type: string
+          format: date-time
+          description: The time the order was placed
+      example:
+        customer_id: 1
+        item: Pizza
+        amount: 200.00
+        time: "2024-02-21T12:00:00Z"
+
+    OrderResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Confirmation message
+        order_id:
+          type: integer
+          description: The ID of the newly created order
+
+  responses:
+    BadRequest:
+      description: Bad request. Invalid input data.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Internal server error. Failed to process the request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
